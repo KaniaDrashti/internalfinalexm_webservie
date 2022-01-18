@@ -1,0 +1,76 @@
+//in secound web
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Services;
+using System.Data.Sql;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Data;
+
+/// <summary>
+/// Summary description for Book
+/// </summary>
+[WebService(Namespace = "http://tempuri.org/")]
+[WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+// To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
+// [System.Web.Script.Services.ScriptService]
+public class Book : System.Web.Services.WebService
+{
+    public Book()
+    {
+
+        //Uncomment the following line if using designed components 
+        //InitializeComponent(); 
+    }
+    
+
+    [WebMethod]
+    public DataTable Book_List(string book_name)
+    {
+        DataTable dt = new DataTable();
+        String query = "select * from book where title = '" + book_name + "'";
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["library"].ConnectionString);
+        SqlCommand cmd = new SqlCommand(query, con);
+        con.Open();
+        DataSet ds = new DataSet();
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        da.Fill(ds, "book");
+        return ds.Tables["book"];
+    }
+
+    [WebMethod]
+    public DataTable GetBook()
+    {
+        DataTable dt = new DataTable();
+        String query = "select * from book";
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["library"].ConnectionString);
+        SqlCommand cmd = new SqlCommand(query, con);
+        con.Open();
+        DataSet ds = new DataSet();
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        da.Fill(ds, "book");
+        return ds.Tables["book"];
+    }
+    [WebMethod]
+    public DataTable Search_issue(string bname, string mname)
+    {
+        DataTable dt = new DataTable();
+        string query="select bi.issue_id, bi.issue_dt,b.title,m.name from book b, book_issue bi,member m where bi.book_id=b.book_id and bi.mem_id=m.mem_id and b.title='" +bname +"'and m.name='"+mname +"'";
+        SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["library"].ConnectionString);
+        SqlCommand cmd = new SqlCommand(query, con);
+        con.Open();
+        DataSet ds = new DataSet();
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+        da.Fill(ds,"issue");
+        return ds.Tables["issue"];
+    }
+  
+    [WebMethod]
+    public string HelloWorld()
+    {
+        return "Hello World";
+    }
+
+}
